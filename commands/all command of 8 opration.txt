@@ -1,0 +1,91 @@
+=====================================================================
+HADOOP PROJECT EXECUTION COMMANDS
+Project: E-commerce Sales Data Analytics
+Operations: 3 MapReduce Jobs & 5 Pig Latin Tasks
+=====================================================================
+
+STEP 0: CLEAN PREVIOUS HDFS OUTPUTS (Run before starting)
+---------------------------------------------------------------------
+hdfs dfs -rm -r /ecommerce/mr_output_city
+hdfs dfs -rm -r /ecommerce/mr_output_payment
+hdfs dfs -rm -r /ecommerce/mr_output_category_avg
+hdfs dfs -rm -r /ecommerce/pig_output
+
+=====================================================================
+PART A: MAPREDUCE OPERATIONS
+=====================================================================
+
+OPERATION 1: City Sales Analysis
+---------------------------------------------------------------------
+1. Compile:
+javac -classpath "C:\hadoop\share\hadoop\common\*;C:\hadoop\share\hadoop\common\lib\*;C:\hadoop\share\hadoop\hdfs\*;C:\hadoop\share\hadoop\mapreduce\*" -d . CitySalesMR.java
+
+2. Create JAR:
+jar -cvf ecommerce_analytics_city.jar CitySalesMR*.class
+
+3. Execute Job:
+hadoop jar ecommerce_analytics_city.jar CitySalesMR /ecommerce/inputs/sales_data.csv /ecommerce/mr_output_city
+
+4. View Output:
+hdfs dfs -cat /ecommerce/mr_output_city/part-r-00000
+
+
+OPERATION 2: Payment Method Count
+---------------------------------------------------------------------
+1. Compile:
+javac -classpath "C:\hadoop\share\hadoop\common\*;C:\hadoop\share\hadoop\common\lib\*;C:\hadoop\share\hadoop\hdfs\*;C:\hadoop\share\hadoop\mapreduce\*" -d . PaymentMethodMR.java
+
+2. Create JAR:
+jar -cvf ecommerce_analytics_payment.jar PaymentMethodMR*.class
+
+3. Execute Job:
+hadoop jar ecommerce_analytics_payment.jar PaymentMethodMR /ecommerce/inputs/sales_data.csv /ecommerce/mr_output_payment
+
+4. View Output:
+hdfs dfs -cat /ecommerce/mr_output_payment/part-r-00000
+
+
+OPERATION 3: Category Average Price Analysis
+---------------------------------------------------------------------
+1. Compile:
+javac -classpath "C:\hadoop\share\hadoop\common\*;C:\hadoop\share\hadoop\common\lib\*;C:\hadoop\share\hadoop\hdfs\*;C:\hadoop\share\hadoop\mapreduce\*" -d . CategoryAvgPriceMR.java
+
+2. Create JAR:
+jar -cvf ecommerce_analytics_avg.jar CategoryAvgPriceMR*.class
+
+3. Execute Job:
+hadoop jar ecommerce_analytics_avg.jar CategoryAvgPriceMR /ecommerce/inputs/sales_data.csv /ecommerce/mr_output_category_avg
+
+4. View Output:
+hdfs dfs -cat /ecommerce/mr_output_category_avg/part-r-00000
+
+
+=====================================================================
+PART B: APACHE PIG OPERATIONS (5 Tasks in 1 Script)
+=====================================================================
+
+1. Execute Pig Script (Runs all 5 operations at once):
+---------------------------------------------------------------------
+pig sajid_ecommerce_analytics.pig
+
+
+2. View Outputs for Each Operation:
+---------------------------------------------------------------------
+Operation 4 (Category Average Price):
+hdfs dfs -cat /ecommerce/pig_output/category_avg_price/part-r-00000
+
+Operation 5 (Category Total Quantity):
+hdfs dfs -cat /ecommerce/pig_output/category_quantity/part-r-00000
+
+Operation 6 (Category Total Revenue):
+hdfs dfs -cat /ecommerce/pig_output/category_revenue/part-r-00000
+
+Operation 7 (City Average Revenue):
+hdfs dfs -cat /ecommerce/pig_output/city_avg_revenue/part-r-00000
+
+Operation 8 (Payment Method Revenue):
+hdfs dfs -cat /ecommerce/pig_output/payment_revenue/part-r-00000
+
+=====================================================================
+END OF EXECUTION SHEET
+=====================================================================
